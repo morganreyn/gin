@@ -8,7 +8,7 @@ VERSION="0.1.4"
 
 DIR=$(pwd)
 EXT=""
-COMMIT="gitg -c"
+COMMIT="git commit -a"
 
 ##############
 # TEXT COLOR #
@@ -317,7 +317,7 @@ if [ $1 ]; then
             if [[ $REPLY =~ ^[Y]$ ]]; then
                 doPush
             else
-                echo "$INFO Push canceled."
+                echo "$INFO Push cancelled."
             fi
 
            ;;
@@ -328,7 +328,7 @@ if [ $1 ]; then
             if [[ $REPLY =~ ^[Y]$ ]]; then
                 doCommand "git reset --hard"
             else
-                echo "$INFO Reset canceled."
+                echo "$INFO Reset cancelled."
             fi
             ;;
         s) ;&
