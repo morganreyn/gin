@@ -7,7 +7,7 @@
 VERSION="0.1.4"
 
 DIR=$(pwd)
-EXT=""
+EXT=$(pwd)
 COMMIT="git commit -a"
 
 ##############
@@ -65,10 +65,7 @@ showConfigs() {
 }
 
 help() {
-    echo "mojo $VERSION"
-    echo ""
     echo "-c <command>   do shell command"
-    echo "-g <command>   do strait git command"
     echo "-h             help"
     echo "-i             mojo initialize"
     echo "-l             list projects and externals"
@@ -279,10 +276,9 @@ add() {
 # MAIN #
 ########
 config
-while getopts "c:g:hilp:svx:z:" o; do
+while getopts "c:hilp:svx:z:" o; do
     case "${o}" in
         c) doCommand "${OPTARG}" ;;
-        g) doCommand "git ${OPTARG}" ;;
         h) help ;;
         i) init ;;
         l) list ;;
@@ -298,8 +294,8 @@ done
 if [ $1 ]; then
     mojoCheck
     case $1 in
-        #b)
-        #build)
+        #TODO: b)
+        #TODO: build)
         c) ;&
         commit)
             doCommandIfChanges "git add --all; eval $COMMIT"
