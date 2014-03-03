@@ -22,10 +22,13 @@ In this example, my main project would my in the myProject directory, but it rel
 Installing mojo
 ---------------
 
-The easiest way to install mojo is to put a copy or link to mojo in the /home/bin directory.  Then make sure that /home/bin is in your PATH.  
+The easiest way to install mojo is to put a copy or link to mojo in the /home/bin directory.  Then make sure that /home/bin is in your PATH. 
 
 > export PATH=$PATH:/home/bin
 
+It is reccomended that you remove the suffix (.sh) when installing into the bin directory or symbollic link within the bin directory
+
+> ln -s path/to/mojo.sh mojo
 
 Initializing and Adding Projects and Externals
 ----------------------------------------------
