@@ -118,13 +118,9 @@ doCommand() {
     while read line
     do
         if [[ "$PRJS" =~ "$line" ]]; then
-            echo "${TITLE_DIRTY}====================================="
-            echo "| $line -- push pending"
-            echo "=====================================${txtrst}"
+            echo "${TITLE_DIRTY}======[ $line -- push pending ${txtrst}"
         else
-            echo "${TITLE}====================================="
-            echo "| $line"
-            echo "=====================================${txtrst}"
+            echo "${TITLE}======[ $line ${txtrst}"
         fi
         cd $DIR/$line
         eval $@
@@ -135,13 +131,9 @@ doCommand() {
     while read line
     do
         if [[ "$EXTS" =~ "$line" ]]; then
-            echo "${TITLE_DIRTY}====================================="
-            echo "| $line -- push pending"
-            echo "=====================================${txtrst}"
+            echo "${TITLE_DIRTY}------[ $line -- push pending ${txtrst}"
         else
-            echo "${TITLE}====================================="
-            echo "| $line"
-            echo "=====================================${txtrst}"
+            echo "${TITLE}------[ $line ${txtrst}"
         fi
        	cd $EXT/$line
        	eval $@
@@ -154,9 +146,7 @@ doCommandIfChanges() {
     do
 	cd $DIR/$line
         if [[ -z $(git status | grep -i 'nothing to commit') ]]; then
-            echo "${TITLE}====================================="
-            echo "| $line"
-            echo "=====================================${txtrst}"
+            echo "${TITLE}======[ $line ${txtrst}"
             eval $@
             if [[ ! -z $(echo "$@" | grep $COMMIT) ]]; then
                 addPush projects $line
@@ -170,9 +160,7 @@ doCommandIfChanges() {
     do
         cd $EXT/$line
         if [[ -z $(git status | grep -i 'nothing to commit') ]]; then
-            echo "${TITLE}====================================="
-            echo "| $line"
-            echo "=====================================${txtrst}"
+            echo "${TITLE}------[ $line ${txtrst}"
             eval $@
             if [[ ! -z $(echo "$@" | grep $COMMIT) ]]; then
                 addPush externals $line
