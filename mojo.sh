@@ -295,7 +295,7 @@ if [ $1 ]; then
             ;;
         p) ;&
         push)
-            echo    "$WARN This will push all local commits to the server."
+            echo    "$WARN This will push ALL local commits to the server."
             read -p "$WARN Are you really ready to push? [Y/n] " -n 1 -r
             echo
             if [[ $REPLY =~ ^[Y]$ ]]; then
