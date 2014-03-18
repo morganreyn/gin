@@ -278,7 +278,7 @@ while getopts "c:hilp:svx:z:" o; do
     esac
     exit 1;
 done
-
+date
 if [ $1 ]; then
     mojoCheck
     case $1 in
