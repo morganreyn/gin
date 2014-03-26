@@ -4,7 +4,7 @@
 ###########
 # GLOBALS #
 ###########
-VERSION="0.1.4"
+VERSION="0.1.5"
 
 DIR=$(pwd)
 EXT=$(pwd)
@@ -41,6 +41,13 @@ mojoCheck() {
     if [ ! -d ".mojo" ]; then
         echo "This is not a mojo directory."
         echo "Use 'mojo -i' to initialize a mojo project"
+        exit 1
+    fi
+}
+
+directoryCheck() {
+    if [ ! -d "$1/$2" ]; then
+        echo "Directory $1/$2 not found."
         exit 1
     fi
 }
@@ -255,6 +262,11 @@ list() {
 
 add() {
     mojoCheck
+    case "$2" in
+        projects)  directoryCheck $DIR $1 ;;
+        externals) directoryCheck $EXT $1 ;;
+    esac
+
     echo "Adding '$1' to $2..."
     echo $1 >> .mojo/$2
     exit 1
