@@ -4,7 +4,7 @@
 ###########
 # GLOBALS #
 ###########
-VERSION="0.1.5"
+VERSION="0.1.6"
 
 DIR=$(pwd)
 EXT=$(pwd)
@@ -77,6 +77,7 @@ help() {
     echo "-i             mojo initialize"
     echo "-l             list projects and externals"
     echo "-p <name>      add project"
+    echo "-r <name>      remove project/external from mojo"
     echo "-s             show configuration values"
     echo "-v             show version"
     echo "-x <name>      add external"
@@ -272,17 +273,48 @@ add() {
     exit 1
 }
 
+remove() {
+    mojoCheck
+    touch $DIR/.mojo/projects-tmp
+    touch $DIR/.mojo/externals-tmp
+    while read line
+    do
+		if [[ "$line" != "$1" ]]; then
+		    echo $line >> .mojo/projects-tmp
+		else
+		    echo "Removing $1 from projects"
+		fi
+		
+    done < $DIR/.mojo/projects
+    
+    while read line
+    do
+        if [[ "$line" != "$1" ]]; then
+		    echo $line >> .mojo/externals-tmp
+		else
+		    echo "Removing $1 from externals"
+		fi
+    done < $DIR/.mojo/externals
+    
+    rm .mojo/projects 
+    rm .mojo/externals
+    mv .mojo/projects-tmp .mojo/projects
+    mv .mojo/externals-tmp .mojo/externals
+    
+}
+
 ########
 # MAIN #
 ########
 config
-while getopts "c:hilp:svx:z:" o; do
+while getopts "c:hilp:r:svx:z:" o; do
     case "${o}" in
         c) doCommand "${OPTARG}" ;;
         h) help ;;
         i) init ;;
         l) list ;;
         p) add ${OPTARG} projects ;;
+        r) remove ${OPTARG} ;;
         s) showConfigs ;;
         v) echo $VERSION ;;
         x) add ${OPTARG} externals ;;
@@ -290,12 +322,10 @@ while getopts "c:hilp:svx:z:" o; do
     esac
     exit 1;
 done
-date
 if [ $1 ]; then
     mojoCheck
+    date
     case $1 in
-        #TODO: b)
-        #TODO: build)
         c) ;&
         commit)
             doCommandIfChanges "git add --all; eval $COMMIT"
