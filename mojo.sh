@@ -26,7 +26,8 @@ bldwht=${txtbld}$(tput setaf 7) #  white
 txtrst=$(tput sgr0)             # Reset
 
 INFO=${bldblu}INFO:${txtrst}
-PASS=${bldgre}PASS:${txtrst}
+PASS=${bldgre}SUCCESS:${txtrst}
+FAIL=${bldred}FAIL:${txtrst}
 WARN=${bldred}WARNING:${txtrst}
 SEPR=${bldyel}"===---------- Externals ----------==="${txtrst}
 
@@ -39,15 +40,15 @@ TITLE_DIRTY=${txtbld}$(tput setaf 1)
 
 mojoCheck() {
     if [ ! -d ".mojo" ]; then
-        echo "This is not a mojo directory."
-        echo "Use 'mojo -i' to initialize a mojo project"
+        echo "$INFO This is not a mojo directory."
+        echo "$INFO Use 'mojo -i' to initialize a mojo project"
         exit 1
     fi
 }
 
 directoryCheck() {
     if [ ! -d "$1/$2" ]; then
-        echo "Directory $1/$2 not found."
+        echo "$FAIL Directory $1/$2 not found."
         exit 1
     fi
 }
@@ -268,9 +269,35 @@ add() {
         externals) directoryCheck $EXT $1 ;;
     esac
 
-    echo "Adding '$1' to $2..."
+    checkAdd $1
     echo $1 >> .mojo/$2
+    echo "$PASS Added '$1' to $2."
     exit 1
+}
+
+checkAdd() {
+    PRJS="|"
+    EXTS="|"
+
+    while read line
+    do
+        PRJS="$PRJS $line |"
+    done < $DIR/.mojo/projects
+
+    while read line
+    do
+       	EXTS="$EXTS $line"
+    done < $DIR/.mojo/externals
+
+    if [[ "$PRJS" =~ "$1" ]]; then
+        echo "$FAIL $1 already exists in projects."
+        exit 1
+    fi
+
+    if [[ "$EXTS" =~ "$1" ]]; then
+        echo "$FAIL $1 already exists in externals."
+        exit 1
+    fi  
 }
 
 remove() {
@@ -282,7 +309,7 @@ remove() {
 		if [[ "$line" != "$1" ]]; then
 		    echo $line >> .mojo/projects-tmp
 		else
-		    echo "Removing $1 from projects"
+		    echo "$INFO Removing $1 from projects..."
 		fi
 		
     done < $DIR/.mojo/projects
@@ -292,7 +319,7 @@ remove() {
         if [[ "$line" != "$1" ]]; then
 		    echo $line >> .mojo/externals-tmp
 		else
-		    echo "Removing $1 from externals"
+		    echo "$INFO Removing $1 from externals..."
 		fi
     done < $DIR/.mojo/externals
     
@@ -300,6 +327,7 @@ remove() {
     rm .mojo/externals
     mv .mojo/projects-tmp .mojo/projects
     mv .mojo/externals-tmp .mojo/externals
+    echo "$PASS $1 removed from mojo."
     
 }
 
