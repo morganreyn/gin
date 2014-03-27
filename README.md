@@ -41,10 +41,10 @@ which will create a .mojo directory that holds all your configurations for your 
 
 > mojo -p javaProject
 
-To add an external, use _-x_
-> mojo -x javaExternalProject1
+To add an external, use _-e_
+> mojo -e javaExternalProject1
 
-> mojo -x javaExternalProject2
+> mojo -e javaExternalProject2
 
 Now there are two projects associated with this mojo directory.  You can see a list of the projects and externals at any time by using _-l_
 > mojo -l
@@ -76,7 +76,7 @@ The other stuff
 ---------------
 
 For everything else, use 
-> mojo 
+> mojo
 
 or 
 

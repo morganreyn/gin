@@ -74,6 +74,7 @@ showConfigs() {
 
 help() {
     echo "-c <command>   do shell command"
+    echo "-e <name>      add external"
     echo "-h             help"
     echo "-i             mojo initialize"
     echo "-l             list projects and externals"
@@ -81,7 +82,6 @@ help() {
     echo "-r <name>      remove project/external from mojo"
     echo "-s             show configuration values"
     echo "-v             show version"
-    echo "-x <name>      add external"
     echo
     echo "c, commit      commit all changes"
     echo "d, diff        diff all edited files"
@@ -335,9 +335,10 @@ remove() {
 # MAIN #
 ########
 config
-while getopts "c:hilp:r:svx:z:" o; do
+while getopts "c:e:hilp:r:svz:" o; do
     case "${o}" in
         c) doCommand "${OPTARG}" ;;
+        e) add ${OPTARG} externals ;;
         h) help ;;
         i) init ;;
         l) list ;;
@@ -345,7 +346,6 @@ while getopts "c:hilp:r:svx:z:" o; do
         r) remove ${OPTARG} ;;
         s) showConfigs ;;
         v) echo $VERSION ;;
-        x) add ${OPTARG} externals ;;
         *) help ;;
     esac
     exit 1;
