@@ -73,21 +73,22 @@ showConfigs() {
 }
 
 help() {
-    echo "-c <command>   do shell command"
-    echo "-e <name>      add external"
-    echo "-h             help"
-    echo "-i             mojo initialize"
-    echo "-l             list projects and externals"
-    echo "-p <name>      add project"
-    echo "-r <name>      remove project/external from mojo"
-    echo "-s             show configuration values"
-    echo "-v             show version"
+    echo "-c <command>          do shell command"
+    echo "-e <name>             add external"
+    echo "-h                    help"
+    echo "-i                    mojo initialize"
+    echo "-l                    list projects and externals"
+    echo "-p <name>             add project"
+    echo "-r <name>             remove project/external from mojo"
+    echo "-s                    show configuration values"
+    echo "-v                    show version"
     echo
-    echo "c, commit      commit all changes"
-    echo "d, diff        diff all edited files"
-    echo "p, push        push changes to server"
-    echo "reset          reset all files back to HEAD"
-    echo "u, update      rebase all projects and externals"
+    echo "c, commit             commit all changes"
+    echo "d, diff               diff all edited files"
+    echo "p, push               push changes to server"
+    echo "reset                 reset all files back to HEAD"
+    echo "u, update             rebase all projects and externals"
+    echo "x <term> <command>    execute command in projects/externals whose names include 'term'"
     exit 1
 }
 
@@ -174,6 +175,29 @@ doCommandIfChanges() {
             if [[ ! -z $(echo "$@" | grep $COMMIT) ]]; then
                 addPush externals $line
             fi
+            echo
+        fi
+    done < $DIR/.mojo/externals
+}
+
+executeSelective() {
+    while read line
+    do
+        if [[ $line == *$1* ]]; then
+            echo "${TITLE}======[ $line ${txtrst}" 
+            cd $DIR/$line         
+            eval $2            
+            echo
+        fi
+    done < $DIR/.mojo/projects
+    echo "${SEPR}"
+    echo
+    while read line
+    do
+        if [[ $line == *$1* ]]; then
+            echo "${TITLE}======[ $line ${txtrst}" 
+            cd $EXT/$line         
+            eval $2            
             echo
         fi
     done < $DIR/.mojo/externals
@@ -396,6 +420,9 @@ if [ $1 ]; then
         u) ;&
         update)
             doCommand "git svn rebase"
+            ;;
+        x)
+            executeSelective $2 $3
             ;;
         *)
             help ;;
