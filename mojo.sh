@@ -88,6 +88,7 @@ help() {
     echo "p, push               push changes to server"
     echo "reset                 reset all files back to HEAD"
     echo "u, update             rebase all projects and externals"
+    echo "U                     update and fetch all branch updates"
     echo "x <term> <command>    execute command in projects/externals whose names include 'term'"
     exit 1
 }
@@ -420,6 +421,9 @@ if [ $1 ]; then
         u) ;&
         update)
             doCommand "git svn rebase"
+            ;;
+        U)
+            doCommand "git svn rebase; git svn fetch"
             ;;
         x)
             executeSelective $2 $3
