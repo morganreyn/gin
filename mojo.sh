@@ -29,6 +29,7 @@ INFO=${bldblu}INFO:${txtrst}
 PASS=${bldgre}SUCCESS:${txtrst}
 FAIL=${bldred}FAIL:${txtrst}
 WARN=${bldred}WARNING:${txtrst}
+STRT=${bldyel}"===---------- Projects ----------==="${txtrst}
 SEPR=${bldyel}"===---------- Externals ----------==="${txtrst}
 
 TITLE=${txtbld}$(tput setaf 4)
@@ -87,6 +88,8 @@ help() {
     echo "d, diff               diff all edited files"
     echo "p, push               push changes to server"
     echo "reset                 reset all files back to HEAD"
+    echo "s, status             show git status when changes have occured"
+    echo "S                     show git status of all items"
     echo "u, update             rebase all projects and externals"
     echo "U                     update and fetch all branch updates"
     echo "x <term> <command>    execute command in projects/externals whose names include 'term'"
@@ -125,7 +128,7 @@ doCommand() {
         EXTS="$EXTS $line"
     done < $DIR/.mojo/push-externals
 
-
+    echo "${STRT}"
     while read line
     do
         if [[ "$PRJS" =~ "$line" ]]; then
@@ -153,6 +156,7 @@ doCommand() {
 }
 
 doCommandIfChanges() {
+	echo "${STRT}"
     while read line
     do
 	cd $DIR/$line
@@ -182,6 +186,7 @@ doCommandIfChanges() {
 }
 
 executeSelective() {
+	echo "${STRT}"
     while read line
     do
         if [[ $line == *$1* ]]; then
@@ -416,8 +421,11 @@ if [ $1 ]; then
             ;;
         s) ;&
         status)
-            doCommand "git status"
+            doCommandIfChanges "git status"
             ;;
+        S) 
+			doCommand "git status"
+			;;
         u) ;&
         update)
             doCommand "git svn rebase"
