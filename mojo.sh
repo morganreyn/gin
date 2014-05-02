@@ -129,6 +129,7 @@ doCommand() {
     done < $DIR/.mojo/push-externals
 
     echo "${STRT}"
+    echo
     while read line
     do
         if [[ "$PRJS" =~ "$line" ]]; then
@@ -156,7 +157,8 @@ doCommand() {
 }
 
 doCommandIfChanges() {
-	echo "${STRT}"
+    echo "${STRT}"
+    echo 
     while read line
     do
 	cd $DIR/$line
@@ -186,7 +188,8 @@ doCommandIfChanges() {
 }
 
 executeSelective() {
-	echo "${STRT}"
+    echo "${STRT}"
+    echo
     while read line
     do
         if [[ $line == *$1* ]]; then
