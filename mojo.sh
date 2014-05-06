@@ -87,6 +87,7 @@ help() {
     echo "c, commit             commit all changes"
     echo "d, diff               diff all edited files"
     echo "p, push               push changes to server"
+    echo "master                switch all to 'master' branch"
     echo "reset                 reset all files back to HEAD"
     echo "s, status             show git status when changes have occured"
     echo "S                     show git status of all items"
@@ -344,9 +345,8 @@ remove() {
 		else
 		    echo "$INFO Removing $1 from projects..."
 		fi
-		
     done < $DIR/.mojo/projects
-    
+
     while read line
     do
         if [[ "$line" != "$1" ]]; then
@@ -355,13 +355,13 @@ remove() {
 		    echo "$INFO Removing $1 from externals..."
 		fi
     done < $DIR/.mojo/externals
-    
-    rm .mojo/projects 
+
+    rm .mojo/projects
     rm .mojo/externals
     mv .mojo/projects-tmp .mojo/projects
     mv .mojo/externals-tmp .mojo/externals
     echo "$PASS $1 removed from mojo."
-    
+
 }
 
 ########
@@ -408,6 +408,9 @@ if [ $1 ]; then
             fi
 
            ;;
+        master)
+            doCommand "git checkout master"
+            ;;
         reset)
             echo    "$WARN The command 'git reset --hard' cannot be undone."
             read -p "$WARN Are you sure? [Y/n] " -n 1 -r
