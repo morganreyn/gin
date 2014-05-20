@@ -416,10 +416,6 @@ if [ $1 ]; then
             read -p "$WARN Are you sure? [Y/n] " -n 1 -r
             echo
             if [[ $REPLY =~ ^[Y]$ ]]; then
-                rm $DIR/.mojo/push-projects
-                rm $DIR/.mojo/push-externals
-                touch $DIR/.mojo/push-projects
-                touch $DIR/.mojo/push-externals
                 doCommand "git reset --hard"
             else
                 echo "$INFO Reset cancelled."
