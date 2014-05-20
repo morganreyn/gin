@@ -428,6 +428,9 @@ if [ $1 ]; then
         s) ;&
         status)
             doCommandIfChanges "git status"
+            echo "Pending Push:"
+            cat $DIR/.mojo/push-projects
+            cat $DIR/.mojo/push-externals
             ;;
         S) 
 			doCommand "git status"
