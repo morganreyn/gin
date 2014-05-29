@@ -4,7 +4,7 @@
 ###########
 # GLOBALS #
 ###########
-VERSION="0.1.7"
+VERSION="2014.05.29"
 
 DIR=$(pwd)
 EXT=$(pwd)
