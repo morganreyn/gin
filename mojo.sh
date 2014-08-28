@@ -91,6 +91,7 @@ help() {
     echo "reset                 reset all files back to HEAD"
     echo "s, status             show git status when changes have occured"
     echo "S                     show git status of all items"
+    echo "su, stash-update		stash changes, update, pop stash"
     echo "u, update             rebase all projects and externals"
     echo "U                     update and fetch all branch updates"
     echo "x <term> <command>    execute command in projects/externals whose names include 'term'"
@@ -430,6 +431,10 @@ if [ $1 ]; then
             ;;
         S) 
 			doCommand "git status"
+			;;
+		su) ;&
+		stash-update)
+			doCommand "git stash; git svn rebase; git stash pop"
 			;;
         u) ;&
         update)
