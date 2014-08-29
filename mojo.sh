@@ -86,14 +86,15 @@ help() {
     echo
     echo "c, commit             commit all changes"
     echo "d, diff               diff all edited files"
+    echo "h, history            show commit history"
     echo "p, push               push changes to server"
     echo "master                switch all to 'master' branch"
     echo "reset                 reset all files back to HEAD"
     echo "s, status             show git status when changes have occured"
-    echo "S                     show git status of all items"
+    echo "S, Status             show git status of all items"
     echo "su, stash-update		stash changes, update, pop stash"
     echo "u, update             rebase all projects and externals"
-    echo "U                     update and fetch all branch updates"
+    echo "U, Update             update and fetch all branch updates"
     echo "x <term> <command>    execute command in projects/externals whose names include 'term'"
     exit 1
 }
@@ -390,13 +391,21 @@ if [ $1 ]; then
     case $1 in
         c) ;&
         commit)
-            doCommandIfChanges "git add --all; eval $COMMIT"
+			echo "" >> .mojo/history
+			date >> .mojo/history
+			echo "Commit:" >> .mojo/history
+            doCommandIfChanges "git add --all; eval $COMMIT; pwd >> $DIR/.mojo/history"
             ;;
         d) ;&
         diff)
             doCommandIfChanges "git status; git diff"
             echo "done."
             ;;
+		h) ;&
+		history)
+			touch .mojo/history
+			less .mojo/history
+			;;
         p) ;&
         push)
             echo    "$WARN This will push ALL local commits to the server."
@@ -429,7 +438,8 @@ if [ $1 ]; then
             cat $DIR/.mojo/push-projects
             cat $DIR/.mojo/push-externals
             ;;
-        S) 
+        S) ;&
+        Status) 
 			doCommand "git status"
 			;;
 		su) ;&
@@ -440,7 +450,8 @@ if [ $1 ]; then
         update)
             doCommand "git svn rebase"
             ;;
-        U)
+        U) ;&
+        Update)
             doCommand "git svn rebase; git svn fetch"
             ;;
         x)
