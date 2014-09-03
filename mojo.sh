@@ -391,10 +391,16 @@ if [ $1 ]; then
     case $1 in
         c) ;&
         commit)
-			echo "" >> .mojo/history
-			date >> .mojo/history
-			echo "[ Commit ]" >> .mojo/history
-            doCommandIfChanges "git add --all; eval $COMMIT; pwd >> $DIR/.mojo/history"
+            touch .mojo/history-tmp
+			date >> .mojo/history-tmp
+			echo "[ Commit ]" >> .mojo/history-tmp
+            doCommandIfChanges "git add --all; eval $COMMIT; pwd >> $DIR/.mojo/history-tmp"
+            cd $DIR
+            echo "==========" >> .mojo/history-tmp
+            echo "" >> .mojo/history-tmp
+            cat .mojo/history >> .mojo/history-tmp
+            cat .mojo/history-tmp > .mojo/history
+            rm .mojo/history-tmp
             ;;
         d) ;&
         diff)
@@ -412,10 +418,16 @@ if [ $1 ]; then
             read -p "$WARN Are you really ready to push? [Y/n] " -n 1 -r
             echo
             if [[ $REPLY =~ ^[Y]$ ]]; then
-				echo "" >> .mojo/history
-				date >> .mojo/history
-				echo "[ Push ]" >> .mojo/history
-                doPush
+				touch .mojo/history-tmp
+				date >> .mojo/history-tmp
+				echo "[ Push ]" >> .mojo/history-tmp
+				doPush
+				cd $DIR
+				echo "==========" >> .mojo/history-tmp
+				echo "" >> .mojo/history-tmp
+				cat .mojo/history >> .mojo/history-tmp
+				cat .mojo/history-tmp > .mojo/history
+				rm .mojo/history-tmp
             else
                 echo "$INFO Push cancelled."
             fi
