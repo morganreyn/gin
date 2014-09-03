@@ -59,7 +59,7 @@ config() {
         IFS="="
         while read -r name value
         do
-             case "${name}" in
+            case "${name}" in
                 DIR) DIR=$value ;;
                 EXT) EXT=$value ;;
                 COMMIT) COMMIT=$value ;;
@@ -84,7 +84,7 @@ help() {
     echo "-s                    show configuration values"
     echo "-v                    show version"
     echo
-    echo "c, commit             commit all changes"
+    echo "c, commit [message]   commit all changes"
     echo "d, diff               diff all edited files"
     echo "h, history            show commit history"
     echo "p, push               push changes to server"
@@ -111,6 +111,7 @@ init() {
     touch .mojo/config
     touch .mojo/push-projects
     touch .mojo/push-externals
+    touch .mojo/history
     echo "DIR=$DIR" > .mojo/config
     echo "EXT=$DIR" >> .mojo/config
     echo "COMMIT=\"git commit -a\"" >> .mojo/config
@@ -393,7 +394,7 @@ if [ $1 ]; then
         commit)
             touch .mojo/history-tmp
 			date >> .mojo/history-tmp
-			echo "[ Commit ]" >> .mojo/history-tmp
+			echo "[ Commit ] $2" >> .mojo/history-tmp
             doCommandIfChanges "git add --all; eval $COMMIT; pwd >> $DIR/.mojo/history-tmp"
             cd $DIR
             echo "==========" >> .mojo/history-tmp
