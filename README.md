@@ -17,7 +17,7 @@ There are two types of directories in mojo.  First are "projects" which can be c
   * unrelatedProject/
   * ...
   
-In this example, my main project would my in the myProject directory, but it relies on compenents found in the workspace directory.  __jsProject__ and __javaProject__ would be placed in "projects" and _javaExternalProject1_ and _javaExternalProject2_ would be placed in "externals."  Externals are not required, but helpful if you are using component-based design and depending on these projects through something like Maven.
+In this example, my main project would be in the myProject directory, but it relies on compenents found in the workspace directory.  __jsProject__ and __javaProject__ would be placed in "projects" and _javaExternalProject1_ and _javaExternalProject2_ would be placed in "externals."  Externals are not required, but helpful if you are using component-based design and depending on these projects through something like Maven.
 
 Installing mojo
 ---------------
@@ -46,7 +46,7 @@ To add an external, use _-e_
 
 > mojo -e javaExternalProject2
 
-Now there are two projects associated with this mojo directory.  You can see a list of the projects and externals at any time by using _-l_
+Now there are multiple projects and multiple externals associated with this mojo directory.  You can see a list of the projects and externals at any time by using _-l_
 > mojo -l
 
 Doing something else
