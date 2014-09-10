@@ -4,7 +4,7 @@
 ###########
 # GLOBALS #
 ###########
-VERSION="2014.05.29"
+VERSION="2014.0903"
 
 DIR=$(pwd)
 EXT=$(pwd)
@@ -92,7 +92,7 @@ help() {
     echo "reset                 reset all files back to HEAD"
     echo "s, status             show git status when changes have occured"
     echo "S, Status             show git status of all items"
-    echo "su, stash-update		stash changes, update, pop stash"
+    echo "su, stash-update      stash changes, update, pop stash"
     echo "u, update             rebase all projects and externals"
     echo "U, Update             update and fetch all branch updates"
     echo "x <term> <command>    execute command in projects/externals whose names include 'term'"
