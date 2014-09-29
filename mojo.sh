@@ -86,7 +86,7 @@ help() {
     echo
     echo "c, commit [message]   commit all changes"
     echo "d, diff               diff all edited files"
-    echo "h, history            show commit history"
+    echo "h, history [term]     show commit history (optional search for 'term')"
     echo "p, push               push changes to server"
     echo "master                switch all to 'master' branch"
     echo "reset                 reset all files back to HEAD"
@@ -410,8 +410,12 @@ if [ $1 ]; then
             ;;
 		h) ;&
 		history)
-			touch .mojo/history
-			less .mojo/history
+		    touch .mojo/history
+			if [ $2 ]; then
+			    sed -n -e "/$2/,/====/ p" .mojo/history
+			else
+			    less .mojo/history
+			fi
 			;;
         p) ;&
         push)
