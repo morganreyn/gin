@@ -109,8 +109,6 @@ init() {
     touch .mojo/projects
     touch .mojo/externals
     touch .mojo/config
-    touch .mojo/push-projects
-    touch .mojo/push-externals
     touch .mojo/history
     echo "DIR=$DIR" > .mojo/config
     echo "EXT=$DIR" >> .mojo/config
@@ -122,26 +120,27 @@ doCommand() {
     PRJS="|"
     EXTS="|"
 
-    while read line
-    do
-        PRJS="$PRJS $line |"
-    done < $DIR/.mojo/push-projects
+    #while read line
+    #do
+    #    PRJS="$PRJS $line |"
+    #done < $DIR/.mojo/push-projects
 
-    while read line
-    do
-        EXTS="$EXTS $line"
-    done < $DIR/.mojo/push-externals
+    #while read line
+    #do
+    #    EXTS="$EXTS $line"
+    #done < $DIR/.mojo/push-externals
 
     echo "${STRT}"
     echo
     while read line
     do
-        if [[ "$PRJS" =~ "$line" ]]; then
+        cd $DIR/$line
+        if [[ -n $(git log --branches --not --remotes --simplify-by-decoration --decorate --oneline) ]]; then
             echo "${TITLE_DIRTY}======[ $line -- push pending ${txtrst}"
         else
             echo "${TITLE}======[ $line ${txtrst}"
         fi
-        cd $DIR/$line
+        
         eval $@
         echo
     done < $DIR/.mojo/projects
@@ -149,12 +148,12 @@ doCommand() {
     echo
     while read line
     do
-        if [[ "$EXTS" =~ "$line" ]]; then
+        cd $EXT/$line
+        if [[ -n $(git log --branches --not --remotes --simplify-by-decoration --decorate --oneline) ]]; then
             echo "${TITLE_DIRTY}------[ $line -- push pending ${txtrst}"
         else
             echo "${TITLE}------[ $line ${txtrst}"
         fi
-       	cd $EXT/$line
        	eval $@
         echo
     done < $DIR/.mojo/externals
@@ -216,30 +215,22 @@ executeSelective() {
     done < $DIR/.mojo/externals
 }
 
-addPush() {
-    PRJS="|"
-    EXTS="|"
-
+showPending() {
     while read line
     do
-        PRJS="$PRJS $line |"
-    done < $DIR/.mojo/push-projects
-
+        cd $DIR/$line
+        if [[ -n $(git log --branches --not --remotes --simplify-by-decoration --decorate --oneline) ]]; then
+            echo " $line"
+        fi
+    done < $DIR/.mojo/projects
+    
     while read line
     do
-       	EXTS="$EXTS $line"
-    done < $DIR/.mojo/push-externals
-
-    if [[ "$1" == "projects" ]]; then
-        if [[ ! "$PRJS" =~ "$2" ]]; then
-            echo $2 >> $DIR/.mojo/push-projects
+        cd $EXT/$line
+        if [[ -n $(git log --branches --not --remotes --simplify-by-decoration --decorate --oneline) ]]; then
+            echo " $line"
         fi
-    fi
-    if [[ "$1" == "externals" ]]; then
-        if [[ ! "$EXTS" =~ "$2" ]]; then
-            echo $2 >> $DIR/.mojo/push-externals
-        fi
-    fi
+    done < $DIR/.mojo/externals
 }
 
 doPush() {
@@ -274,11 +265,6 @@ doPush() {
             git stash pop
         fi
     done < $DIR/.mojo/externals
-
-    rm $DIR/.mojo/push-projects
-    rm $DIR/.mojo/push-externals
-    touch $DIR/.mojo/push-projects
-    touch $DIR/.mojo/push-externals
 
 }
 
@@ -455,8 +441,7 @@ if [ $1 ]; then
         status)
             doCommandIfChanges "git status"
             echo "Pending Push:"
-            cat $DIR/.mojo/push-projects
-            cat $DIR/.mojo/push-externals
+            showPending
             ;;
         S) ;&
         Status) 
