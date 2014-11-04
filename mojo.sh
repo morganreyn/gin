@@ -371,7 +371,7 @@ remove() {
 # MAIN #
 ########
 config
-while getopts "c:e:hilp:r:svz:" o; do
+while getopts "c:e:hilp:r:sv:" o; do
     case "${o}" in
         c) doCommand "${OPTARG}" ;;
         e) add ${OPTARG} externals ;;
