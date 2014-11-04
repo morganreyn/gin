@@ -117,19 +117,7 @@ init() {
 }
 
 doCommand() {
-    PRJS="|"
-    EXTS="|"
-
-    #while read line
-    #do
-    #    PRJS="$PRJS $line |"
-    #done < $DIR/.mojo/push-projects
-
-    #while read line
-    #do
-    #    EXTS="$EXTS $line"
-    #done < $DIR/.mojo/push-externals
-
+    
     echo "${STRT}"
     echo
     while read line
@@ -357,7 +345,7 @@ remove() {
 # MAIN #
 ########
 config
-while getopts "c:e:hilp:r:sv:" o; do
+while getopts "c:e:hilp:r:sv" o; do
     case "${o}" in
         c) doCommand "${OPTARG}" ;;
         e) add ${OPTARG} externals ;;
