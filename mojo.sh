@@ -283,6 +283,11 @@ add() {
     checkAdd $1
     echo $1 >> .mojo/$2
     echo "$PASS Added '$1' to $2."
+    
+    # Cleanup
+    sort .mojo/projects -o .mojo/projects
+    sort .mojo/externals -o .mojo/externals
+    
     exit 1
 }
 
