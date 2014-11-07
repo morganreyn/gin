@@ -156,9 +156,6 @@ doCommandIfChanges() {
         if [[ -z $(git status | grep -i 'nothing to commit') ]]; then
             echo "${TITLE}======[ $line ${txtrst}"
             eval $@
-            if [[ ! -z $(echo "$@" | grep $COMMIT) ]]; then
-                addPush projects $line
-            fi
             echo
         fi
     done < $DIR/.mojo/projects
@@ -170,9 +167,6 @@ doCommandIfChanges() {
         if [[ -z $(git status | grep -i 'nothing to commit') ]]; then
             echo "${TITLE}------[ $line ${txtrst}"
             eval $@
-            if [[ ! -z $(echo "$@" | grep $COMMIT) ]]; then
-                addPush externals $line
-            fi
             echo
         fi
     done < $DIR/.mojo/externals
