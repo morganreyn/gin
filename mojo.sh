@@ -4,7 +4,7 @@
 ###########
 # GLOBALS #
 ###########
-VERSION="14.11.04-1306"
+VERSION="14.11.12-1608"
 
 DIR=$(pwd)
 EXT=$(pwd)
@@ -218,17 +218,19 @@ showPending() {
 doPush() {
     while read line
     do
-        STASH=0
         cd $DIR/$line
-        if [[ -z $(git status | grep -i 'nothing to commit') ]]; then
-            STASH=1
-            echo "Stashing changes for $line"
-            git stash
-        fi
-        git svn dcommit
-        if [ $STASH == 1 ]; then
-            echo "Unstashing changes for $line"
-            git stash pop
+        if [[ -n $(git log --branches --not --remotes --simplify-by-decoration --decorate --oneline) ]]; then
+            STASH=0
+            if [[ -z $(git status | grep -i 'nothing to commit') ]]; then
+                STASH=1
+                echo "Stashing changes for $line"
+                git stash
+            fi
+            git svn dcommit
+            if [ $STASH == 1 ]; then
+                echo "Unstashing changes for $line"
+                git stash pop
+            fi
         fi
     done < $DIR/.mojo/projects
 
@@ -236,15 +238,18 @@ doPush() {
     do
       	STASH=0
         cd $EXT/$line
-        if [[ -z $(git status | grep -i 'nothing to commit') ]]; then
-            STASH=1
-            echo "Stashing changes for $line"
-            git stash
-        fi
-	git svn dcommit
-        if [[ $STASH == 1 ]]; then
-            echo "Unstashing changes for $line"
-            git stash pop
+        if [[ -n $(git log --branches --not --remotes --simplify-by-decoration --decorate --oneline) ]]; then
+            STASH=0
+            if [[ -z $(git status | grep -i 'nothing to commit') ]]; then
+                STASH=1
+                echo "Stashing changes for $line"
+                git stash
+            fi
+            git svn dcommit
+            if [[ $STASH == 1 ]]; then
+                echo "Unstashing changes for $line"
+                git stash pop
+            fi
         fi
     done < $DIR/.mojo/externals
 
@@ -392,6 +397,10 @@ if [ $1 ]; then
 			;;
         p) ;&
         push)
+            echo "$INFO Projects to be pushed:"
+            showPending
+            echo ""
+            
             echo    "$WARN This will push ALL local commits to the server."
             read -p "$WARN Are you really ready to push? [Y/n] " -n 1 -r
             echo
@@ -427,8 +436,9 @@ if [ $1 ]; then
         s) ;&
         status)
             doCommandIfChanges "git status"
-            echo "Pending Push:"
+            echo "$INFO Pending Push:"
             showPending
+            echo ""
             ;;
         S) ;&
         Status) 
