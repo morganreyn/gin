@@ -4,7 +4,7 @@
 ###########
 # GLOBALS #
 ###########
-VERSION="14.11.12-1608"
+VERSION="14.11.14-1318"
 
 DIR=$(pwd)
 EXT=$(pwd)
@@ -405,16 +405,16 @@ if [ $1 ]; then
             read -p "$WARN Are you really ready to push? [Y/n] " -n 1 -r
             echo
             if [[ $REPLY =~ ^[Y]$ ]]; then
-				touch .mojo/history-tmp
-				date >> .mojo/history-tmp
-				echo "[ Push ]" >> .mojo/history-tmp
+				touch $DIR/.mojo/history-tmp
+				date >> $DIR/.mojo/history-tmp
+				echo "[ Push ]" >> $DIR/.mojo/history-tmp
 				doPush
 				cd $DIR
-				echo "==========" >> .mojo/history-tmp
-				echo "" >> .mojo/history-tmp
-				cat .mojo/history >> .mojo/history-tmp
-				cat .mojo/history-tmp > .mojo/history
-				rm .mojo/history-tmp
+				echo "==========" >> $DIR/.mojo/history-tmp
+				echo "" >> $DIR/.mojo/history-tmp
+				cat $DIR/.mojo/history >> $DIR/.mojo/history-tmp
+				cat $DIR/.mojo/history-tmp > $DIR/.mojo/history
+				rm $DIR/.mojo/history-tmp
             else
                 echo "$INFO Push cancelled."
             fi
