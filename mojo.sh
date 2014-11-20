@@ -74,13 +74,12 @@ showConfigs() {
 }
 
 help() {
+    echo "-a <p/e> <dir name>   add project or external"
     echo "-c <command>          do shell command"
-    echo "-e <name>             add external"
     echo "-h                    help"
     echo "-i                    mojo initialize"
     echo "-l                    list projects and externals"
-    echo "-p <name>             add project"
-    echo "-r <name>             remove project/external from mojo"
+    echo "-r <dir name>         remove project/external from mojo"
     echo "-s                    show configuration values"
     echo "-v                    show version"
     echo
@@ -274,18 +273,30 @@ list() {
 
 add() {
     mojoCheck
-    case "$2" in
-        projects)  directoryCheck $DIR $1 ;;
-        externals) directoryCheck $EXT $1 ;;
+    FILE=$1
+    case "$1" in
+        p) ;&
+        project) ;&
+        projects) 
+            directoryCheck $DIR $2 
+            FILE="projects"
+        ;;
+        
+        e) ;&
+        external)  ;&
+        externals)
+            directoryCheck $EXT $2 
+            FILE="externals"
+        ;;
     esac
 
-    checkAdd $1
-    echo $1 >> .mojo/$2
-    echo "$PASS Added '$1' to $2."
+    checkAdd $2
+    echo $2 >> $DIR/.mojo/$FILE
+    echo "$PASS Added '$2' to $FILE."
     
     # Cleanup
-    sort .mojo/projects -o .mojo/projects
-    sort .mojo/externals -o .mojo/externals
+    sort $DIR/.mojo/projects -o $DIR/.mojo/projects
+    sort $DIR/.mojo/externals -o $DIR/.mojo/externals
     
     exit 1
 }
@@ -337,10 +348,10 @@ remove() {
 		fi
     done < $DIR/.mojo/externals
 
-    rm .mojo/projects
-    rm .mojo/externals
-    mv .mojo/projects-tmp .mojo/projects
-    mv .mojo/externals-tmp .mojo/externals
+    rm $DIR/.mojo/projects
+    rm $DIR/.mojo/externals
+    mv $DIR/.mojo/projects-tmp $DIR/.mojo/projects
+    mv $DIR/.mojo/externals-tmp $DIR/.mojo/externals
     echo "$PASS $1 removed from mojo."
 
 }
@@ -349,14 +360,19 @@ remove() {
 # MAIN #
 ########
 config
-while getopts "c:e:hilp:r:sv" o; do
+while getopts "a:c:hilr:sv" o; do
     case "${o}" in
+        a) 
+            if [[ $3 ]]; then
+                add ${OPTARG} $3
+            else
+                echo "Usage: mojo -a {p[roject] / e[xternal] } [directory]"
+            fi
+            ;;
         c) doCommand "${OPTARG}" ;;
-        e) add ${OPTARG} externals ;;
         h) help ;;
         i) init ;;
         l) list ;;
-        p) add ${OPTARG} projects ;;
         r) remove ${OPTARG} ;;
         s) showConfigs ;;
         v) echo $VERSION ;;
