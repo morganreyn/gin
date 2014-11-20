@@ -4,7 +4,7 @@
 ###########
 # GLOBALS #
 ###########
-VERSION="14.11.14-1318"
+VERSION="14.11.20-0954"
 
 DIR=$(pwd)
 EXT=$(pwd)
@@ -273,7 +273,7 @@ list() {
 
 add() {
     mojoCheck
-    FILE=$1
+    FILE=""
     case "$1" in
         p) ;&
         project) ;&
