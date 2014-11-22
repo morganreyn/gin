@@ -36,15 +36,15 @@ Initializing and Adding Projects and Externals
 In the case above, to initialize a mojo directory, simply move to _~/workspace/myProject/_ and use the command
 > mojo -i
 
-which will create a .mojo directory that holds all your configurations for your project. To add any number of projects, use _-p_
-> mojo -p jsProject
+which will create a .mojo directory that holds all your configurations for your project. To add any number of projects, use _-a p<roject>_
+> mojo -a p jsProject
 
-> mojo -p javaProject
+> mojo -a project javaProject
 
-To add an external, use _-e_
-> mojo -e javaExternalProject1
+To add an external, use _-a e<xternal>_
+> mojo -a e javaExternalProject1
 
-> mojo -e javaExternalProject2
+> mojo -a external javaExternalProject2
 
 Now there are multiple projects and multiple externals associated with this mojo directory.  You can see a list of the projects and externals at any time by using _-l_
 > mojo -l
