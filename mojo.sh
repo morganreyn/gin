@@ -491,7 +491,6 @@ while getopts "a:c:e:hilp:r:sv" o; do
 done
 
 if [ $1 ]; then
-    echo "TEST: $1 -- $@"
     mojoCheck
     date
     case $1 in
