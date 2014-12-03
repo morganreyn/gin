@@ -4,7 +4,7 @@
 ###########
 # GLOBALS #
 ###########
-VERSION="14.11.20-0954"
+VERSION="14.12.03-1139"
 
 DIR=$(pwd)
 EXT=$(pwd)
@@ -369,7 +369,7 @@ while getopts "a:c:hilr:sv" o; do
                 echo "Usage: mojo -a {p[roject] / e[xternal] } [directory]"
             fi
             ;;
-        c) doCommand "${OPTARG}" ;;
+        c) mojoCheck; doCommand "${OPTARG}" ;;
         h) help ;;
         i) init ;;
         l) list ;;
@@ -415,39 +415,24 @@ if [ $1 ]; then
         push)
             echo "$INFO Projects to be pushed:"
             showPending
-            echo ""
-            
-            echo    "$WARN This will push ALL local commits to the server."
-            read -p "$WARN Are you really ready to push? [Y/n] " -n 1 -r
             echo
-            if [[ $REPLY =~ ^[Y]$ ]]; then
-				touch $DIR/.mojo/history-tmp
-				date >> $DIR/.mojo/history-tmp
-				echo "[ Push ]" >> $DIR/.mojo/history-tmp
-				doPush
-				cd $DIR
-				echo "==========" >> $DIR/.mojo/history-tmp
-				echo "" >> $DIR/.mojo/history-tmp
-				cat $DIR/.mojo/history >> $DIR/.mojo/history-tmp
-				cat $DIR/.mojo/history-tmp > $DIR/.mojo/history
-				rm $DIR/.mojo/history-tmp
-            else
-                echo "$INFO Push cancelled."
-            fi
 
+			touch $DIR/.mojo/history-tmp
+			date >> $DIR/.mojo/history-tmp
+			echo "[ Push ]" >> $DIR/.mojo/history-tmp
+			doPush
+			cd $DIR
+			echo "==========" >> $DIR/.mojo/history-tmp
+			echo "" >> $DIR/.mojo/history-tmp
+			cat $DIR/.mojo/history >> $DIR/.mojo/history-tmp
+			cat $DIR/.mojo/history-tmp > $DIR/.mojo/history
+			rm $DIR/.mojo/history-tmp
            ;;
         master)
             doCommand "git checkout master"
             ;;
         reset)
-            echo    "$WARN The command 'git reset --hard' cannot be undone."
-            read -p "$WARN Are you sure? [Y/n] " -n 1 -r
-            echo
-            if [[ $REPLY =~ ^[Y]$ ]]; then
-                doCommand "git reset --hard"
-            else
-                echo "$INFO Reset cancelled."
-            fi
+            doCommand "git reset --hard"
             ;;
         s) ;&
         status)
