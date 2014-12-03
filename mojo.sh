@@ -4,7 +4,7 @@
 ###########
 # GLOBALS #
 ###########
-VERSION="14.11.20-0954"
+VERSION="14.12.03-1338"
 
 DIR=$(pwd)
 EXT=$(pwd)
@@ -275,19 +275,31 @@ add() {
     mojoCheck
     FILE=""
     case "$1" in
-        p) ;&
-        project) ;&
+        p) 
+            directoryCheck $DIR $2 
+            FILE="projects"
+            ;;
+        project) 
+            directoryCheck $DIR $2 
+            FILE="projects"
+            ;;
         projects) 
             directoryCheck $DIR $2 
             FILE="projects"
-        ;;
+            ;;
         
-        e) ;&
-        external)  ;&
+        e) 
+            directoryCheck $EXT $2 
+            FILE="externals"
+            ;;
+        external)
+            directoryCheck $EXT $2 
+            FILE="externals"
+            ;;
         externals)
             directoryCheck $EXT $2 
             FILE="externals"
-        ;;
+            ;;
     esac
 
     checkAdd $2
@@ -356,6 +368,64 @@ remove() {
 
 }
 
+#################
+# CASES IN MAIN #
+#################
+# Extracted for use with older versions of bash that don't support fallthrough
+
+_commit() {
+    touch .mojo/history-tmp
+	date >> .mojo/history-tmp
+	echo "[ Commit ] $2" >> .mojo/history-tmp
+    doCommandIfChanges "git add --all; eval $COMMIT; pwd >> $DIR/.mojo/history-tmp"
+    cd $DIR
+    echo "==========" >> .mojo/history-tmp
+    echo "" >> .mojo/history-tmp
+    cat .mojo/history >> .mojo/history-tmp
+    cat .mojo/history-tmp > .mojo/history
+    rm .mojo/history-tmp
+}
+
+_diff() {
+    doCommandIfChanges "git status; git diff"
+}
+
+_history() {
+    touch .mojo/history
+    if [ $2 ]; then
+        sed -n -e "/$2/,/====/ p" .mojo/history
+    else
+        less .mojo/history
+    fi
+}
+
+_push() {
+    echo "$INFO Projects to be pushed:"
+    showPending
+    echo
+    if [[ $REPLY =~ ^[Y]$ ]]; then
+        touch $DIR/.mojo/history-tmp
+        date >> $DIR/.mojo/history-tmp
+        echo "[ Push ]" >> $DIR/.mojo/history-tmp
+        doPush
+        cd $DIR
+        echo "==========" >> $DIR/.mojo/history-tmp
+        echo "" >> $DIR/.mojo/history-tmp
+        cat $DIR/.mojo/history >> $DIR/.mojo/history-tmp
+        cat $DIR/.mojo/history-tmp > $DIR/.mojo/history
+        rm $DIR/.mojo/history-tmp
+    else
+        echo "$INFO Push cancelled."
+    fi
+}
+
+_status() {
+    doCommandIfChanges "git status"
+    echo "$INFO Pending Push:"
+    showPending
+    echo ""
+}
+
 ########
 # MAIN #
 ########
@@ -384,99 +454,44 @@ if [ $1 ]; then
     mojoCheck
     date
     case $1 in
-        c) ;&
-        commit)
-            touch .mojo/history-tmp
-			date >> .mojo/history-tmp
-			echo "[ Commit ] $2" >> .mojo/history-tmp
-            doCommandIfChanges "git add --all; eval $COMMIT; pwd >> $DIR/.mojo/history-tmp"
-            cd $DIR
-            echo "==========" >> .mojo/history-tmp
-            echo "" >> .mojo/history-tmp
-            cat .mojo/history >> .mojo/history-tmp
-            cat .mojo/history-tmp > .mojo/history
-            rm .mojo/history-tmp
-            ;;
-        d) ;&
-        diff)
-            doCommandIfChanges "git status; git diff"
-            echo "done."
-            ;;
-		h) ;&
-		history)
-		    touch .mojo/history
-			if [ $2 ]; then
-			    sed -n -e "/$2/,/====/ p" .mojo/history
-			else
-			    less .mojo/history
-			fi
-			;;
-        p) ;&
-        push)
-            echo "$INFO Projects to be pushed:"
-            showPending
-            echo ""
-            
-            echo    "$WARN This will push ALL local commits to the server."
-            read -p "$WARN Are you really ready to push? [Y/n] " -n 1 -r
-            echo
-            if [[ $REPLY =~ ^[Y]$ ]]; then
-				touch $DIR/.mojo/history-tmp
-				date >> $DIR/.mojo/history-tmp
-				echo "[ Push ]" >> $DIR/.mojo/history-tmp
-				doPush
-				cd $DIR
-				echo "==========" >> $DIR/.mojo/history-tmp
-				echo "" >> $DIR/.mojo/history-tmp
-				cat $DIR/.mojo/history >> $DIR/.mojo/history-tmp
-				cat $DIR/.mojo/history-tmp > $DIR/.mojo/history
-				rm $DIR/.mojo/history-tmp
-            else
-                echo "$INFO Push cancelled."
-            fi
+        c) _commit $@ ;;
+        commit) _commit $@ ;;
+        
+        d) _diff $@ ;;
+        diff) _diff $@ ;;
+        
+		h) _history $@ ;;
+		history) _history $@ ;;
+		    
+        p) _push $@ ;;
+        push) _push $@ ;;
 
-           ;;
         master)
             doCommand "git checkout master"
             ;;
+
         reset)
-            echo    "$WARN The command 'git reset --hard' cannot be undone."
-            read -p "$WARN Are you sure? [Y/n] " -n 1 -r
-            echo
-            if [[ $REPLY =~ ^[Y]$ ]]; then
-                doCommand "git reset --hard"
-            else
-                echo "$INFO Reset cancelled."
-            fi
+            doCommand "git reset --hard"
             ;;
-        s) ;&
-        status)
-            doCommandIfChanges "git status"
-            echo "$INFO Pending Push:"
-            showPending
-            echo ""
-            ;;
-        S) ;&
-        Status) 
-			doCommand "git status"
-			;;
-		su) ;&
-		stash-update)
-			doCommand "git stash; git svn rebase; git stash pop"
-			;;
-        u) ;&
-        update)
-            doCommand "git svn rebase"
-            ;;
-        U) ;&
-        Update)
-            doCommand "git svn rebase; git svn fetch"
-            ;;
-        x)
-            executeSelective $2 $3
-            ;;
-        *)
-            help ;;
+
+        s) _status $@ ;;
+        status) _status $@ ;;
+            
+        S) doCommand "git status" ;;
+        Status) doCommand "git status" ;;
+        
+		su) doCommand "git stash; git svn rebase; git stash pop" ;;
+		stash-update) doCommand "git stash; git svn rebase; git stash pop" ;;
+		
+        u) doCommand "git svn rebase" ;;
+        update) doCommand "git svn rebase" ;;
+        
+        U) doCommand "git svn rebase; git svn fetch" ;;
+        Update) doCommand "git svn rebase; git svn fetch" ;;
+        
+        x) executeSelective $2 $3 ;;
+        
+        *) help ;;
     esac
     exit 1
 fi
