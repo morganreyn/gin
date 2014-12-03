@@ -134,7 +134,7 @@ doCommand() {
     fi
     if [ $RUNEXT == 1 ]; then
         echo "${SEPR}"
-        z   echo
+        echo
         while read line
         do
             cd $EXT/$line
