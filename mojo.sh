@@ -116,84 +116,95 @@ init() {
 }
 
 doCommand() {
-    
-    echo "${STRT}"
-    echo
-    while read line
-    do
-        cd $DIR/$line
-        if [[ -n $(git log --branches --not --remotes --simplify-by-decoration --decorate --oneline) ]]; then
-            echo "${TITLE_DIRTY}======[ $line -- push pending ${txtrst}"
-        else
-            echo "${TITLE}======[ $line ${txtrst}"
-        fi
+    if [ $RUNPROJ == 1 ]; then
+        echo "${STRT}"
+        echo
+        while read line
+        do
+            cd $DIR/$line
+            if [[ -n $(git log --branches --not --remotes --simplify-by-decoration --decorate --oneline) ]]; then
+                echo "${TITLE_DIRTY}======[ $line -- push pending ${txtrst}"
+            else
+                echo "${TITLE}======[ $line ${txtrst}"
+            fi
         
-        eval $@
-        echo
-    done < $DIR/.mojo/projects
-    echo "${SEPR}"
-    echo
-    while read line
-    do
-        cd $EXT/$line
-        if [[ -n $(git log --branches --not --remotes --simplify-by-decoration --decorate --oneline) ]]; then
-            echo "${TITLE_DIRTY}------[ $line -- push pending ${txtrst}"
-        else
-            echo "${TITLE}------[ $line ${txtrst}"
-        fi
-       	eval $@
-        echo
-    done < $DIR/.mojo/externals
+            eval $@
+            echo
+        done < $DIR/.mojo/projects
+    fi
+    if [ $RUNEXT == 1 ]; then
+        echo "${SEPR}"
+        z   echo
+        while read line
+        do
+            cd $EXT/$line
+            if [[ -n $(git log --branches --not --remotes --simplify-by-decoration --decorate --oneline) ]]; then
+                echo "${TITLE_DIRTY}------[ $line -- push pending ${txtrst}"
+            else
+                echo "${TITLE}------[ $line ${txtrst}"
+            fi
+       	    eval $@
+            echo
+        done < $DIR/.mojo/externals
+    fi
 }
 
 doCommandIfChanges() {
-    echo "${STRT}"
-    echo 
-    while read line
-    do
-	cd $DIR/$line
-        if [[ -z $(git status | grep -i 'nothing to commit') ]]; then
-            echo "${TITLE}======[ $line ${txtrst}"
-            eval $@
-            echo
-        fi
-    done < $DIR/.mojo/projects
-    echo "${SEPR}"
-    echo
-    while read line
-    do
-        cd $EXT/$line
-        if [[ -z $(git status | grep -i 'nothing to commit') ]]; then
-            echo "${TITLE}------[ $line ${txtrst}"
-            eval $@
-            echo
-        fi
-    done < $DIR/.mojo/externals
+    if [ $RUNPROJ == 1 ]; then
+        echo "${STRT}"
+        echo 
+        while read line
+        do
+	    cd $DIR/$line
+            if [[ -z $(git status | grep -i 'nothing to commit') ]]; then
+                echo "${TITLE}======[ $line ${txtrst}"
+                eval $@
+                echo
+            fi
+        done < $DIR/.mojo/projects
+    fi
+    if [ $RUNEXT == 1 ]; then
+        echo "${SEPR}"
+        echo
+        while read line
+        do
+            cd $EXT/$line
+            if [[ -z $(git status | grep -i 'nothing to commit') ]]; then
+                echo "${TITLE}------[ $line ${txtrst}"
+                eval $@
+                echo
+            fi
+        done < $DIR/.mojo/externals
+    fi
 }
 
 executeSelective() {
-    echo "${STRT}"
-    echo
-    while read line
-    do
-        if [[ $line == *$1* ]]; then
-            echo "${TITLE}======[ $line ${txtrst}" 
-            cd $DIR/$line         
-            eval $2            
-            echo
-        fi
-    done < $DIR/.mojo/projects
-    echo "${SEPR}"
-    echo
-    while read line
-    do
-        if [[ $line == *$1* ]]; then
-            echo "${TITLE}======[ $line ${txtrst}" 
-            cd $EXT/$line         
-            eval $2            
-            echo
-        fi
-    done < $DIR/.mojo/externals
+    if [ $RUNPROJ == 1 ]; then
+        echo "${STRT}"
+        echo
+        while read line
+        do
+            if [[ $line == *$1* ]]; then
+                echo "${TITLE}======[ $line ${txtrst}" 
+                cd $DIR/$line         
+                eval $2            
+                echo
+            fi
+        done < $DIR/.mojo/projects
+    fi
+    if [ $RUNEXT == 1 ]; then
+        echo "${SEPR}"
+        echo
+        while read line
+        do
+            if [[ $line == *$1* ]]; then
+                echo "${TITLE}------[ $line ${txtrst}" 
+                cd $EXT/$line         
+                eval $2            
+                echo
+            fi
+        done < $DIR/.mojo/externals
+    fi
 }
 
 showPending() {
@@ -215,42 +226,44 @@ showPending() {
 }
 
 doPush() {
-    while read line
-    do
-        cd $DIR/$line
-        if [[ -n $(git log --branches --not --remotes --simplify-by-decoration --decorate --oneline) ]]; then
-            STASH=0
-            if [[ -z $(git status | grep -i 'nothing to commit') ]]; then
-                STASH=1
-                echo "Stashing changes for $line"
-                git stash
+    if [ $RUNPROJ == 1 ]; then
+        while read line
+        do
+            cd $DIR/$line
+            if [[ -n $(git log --branches --not --remotes --simplify-by-decoration --decorate --oneline) ]]; then
+                STASH=0
+                if [[ -z $(git status | grep -i 'nothing to commit') ]]; then
+                    STASH=1
+                    echo "Stashing changes for $line"
+                    git stash
+                fi
+                git svn dcommit
+                if [ $STASH == 1 ]; then
+                    echo "Unstashing changes for $line"
+                    git stash pop
+                fi
             fi
-            git svn dcommit
-            if [ $STASH == 1 ]; then
-                echo "Unstashing changes for $line"
-                git stash pop
+        done < $DIR/.mojo/projects
+    fi
+    if [ $RUNEXT == 1 ]; then
+        while read line
+        do
+            cd $EXT/$line
+            if [[ -n $(git log --branches --not --remotes --simplify-by-decoration --decorate --oneline) ]]; then
+                STASH=0
+                if [[ -z $(git status | grep -i 'nothing to commit') ]]; then
+                    STASH=1
+                    echo "Stashing changes for $line"
+                    git stash
+                fi
+                git svn dcommit
+                if [[ $STASH == 1 ]]; then
+                    echo "Unstashing changes for $line"
+                    git stash pop
+                fi
             fi
-        fi
-    done < $DIR/.mojo/projects
-
-    while read line
-    do
-      	STASH=0
-        cd $EXT/$line
-        if [[ -n $(git log --branches --not --remotes --simplify-by-decoration --decorate --oneline) ]]; then
-            STASH=0
-            if [[ -z $(git status | grep -i 'nothing to commit') ]]; then
-                STASH=1
-                echo "Stashing changes for $line"
-                git stash
-            fi
-            git svn dcommit
-            if [[ $STASH == 1 ]]; then
-                echo "Unstashing changes for $line"
-                git stash pop
-            fi
-        fi
-    done < $DIR/.mojo/externals
+        done < $DIR/.mojo/externals
+    fi
 
 }
 
@@ -403,20 +416,18 @@ _push() {
     echo "$INFO Projects to be pushed:"
     showPending
     echo
-    if [[ $REPLY =~ ^[Y]$ ]]; then
-        touch $DIR/.mojo/history-tmp
-        date >> $DIR/.mojo/history-tmp
-        echo "[ Push ]" >> $DIR/.mojo/history-tmp
-        doPush
-        cd $DIR
-        echo "==========" >> $DIR/.mojo/history-tmp
-        echo "" >> $DIR/.mojo/history-tmp
-        cat $DIR/.mojo/history >> $DIR/.mojo/history-tmp
-        cat $DIR/.mojo/history-tmp > $DIR/.mojo/history
-        rm $DIR/.mojo/history-tmp
-    else
-        echo "$INFO Push cancelled."
-    fi
+    
+    touch $DIR/.mojo/history-tmp
+    date >> $DIR/.mojo/history-tmp
+    echo "[ Push ]" >> $DIR/.mojo/history-tmp
+    doPush
+    
+    cd $DIR
+    echo "==========" >> $DIR/.mojo/history-tmp
+    echo "" >> $DIR/.mojo/history-tmp
+    cat $DIR/.mojo/history >> $DIR/.mojo/history-tmp
+    cat $DIR/.mojo/history-tmp > $DIR/.mojo/history
+    rm $DIR/.mojo/history-tmp
 }
 
 _status() {
@@ -430,7 +441,9 @@ _status() {
 # MAIN #
 ########
 config
-while getopts "a:c:hilr:sv" o; do
+RUNPROJ=1
+RUNEXT=1
+while getopts "a:c:e:hilp:r:sv" o; do
     case "${o}" in
         a) 
             if [[ $3 ]]; then
@@ -438,31 +451,59 @@ while getopts "a:c:hilr:sv" o; do
             else
                 echo "Usage: mojo -a {p[roject] / e[xternal] } [directory]"
             fi
+            exit 1
             ;;
-        c) mojoCheck; doCommand "${OPTARG}" ;;
-        h) help ;;
-        i) init ;;
-        l) list ;;
-        r) remove ${OPTARG} ;;
-        s) showConfigs ;;
-        v) echo $VERSION ;;
-        *) help ;;
+        c) 
+            mojoCheck
+            doCommand "${OPTARG}"
+            exit 1 
+            ;;
+#         e)
+#             RUNPROJ=0
+#             ;;
+        h) 
+            help 
+            exit 1
+            ;;
+        i) 
+            init 
+            exit 1
+            ;;
+        l) 
+            list 
+            exit 1
+            ;;
+#         p)
+#             RUNEXT=0
+#             ;;
+        r) 
+            remove ${OPTARG} 
+            exit 1
+            ;;
+        s) showConfigs 
+            exit 1
+            ;;
+        v) 
+            echo $VERSION 
+            exit 1
+            ;;
     esac
-    exit 1;
 done
+
 if [ $1 ]; then
+    echo "TEST: $1 -- $@"
     mojoCheck
     date
     case $1 in
         c) _commit $@ ;;
         commit) _commit $@ ;;
-        
+
         d) _diff $@ ;;
         diff) _diff $@ ;;
-        
-		h) _history $@ ;;
-		history) _history $@ ;;
-		    
+
+        h) _history $@ ;;
+        history) _history $@ ;;
+
         p) _push $@ ;;
         push) _push $@ ;;
 
@@ -476,21 +517,21 @@ if [ $1 ]; then
 
         s) _status $@ ;;
         status) _status $@ ;;
-            
+
         S) doCommand "git status" ;;
         Status) doCommand "git status" ;;
-        
-		su) doCommand "git stash; git svn rebase; git stash pop" ;;
-		stash-update) doCommand "git stash; git svn rebase; git stash pop" ;;
-		
+
+        su) doCommand "git stash; git svn rebase; git stash pop" ;;
+        stash-update) doCommand "git stash; git svn rebase; git stash pop" ;;
+
         u) doCommand "git svn rebase" ;;
         update) doCommand "git svn rebase" ;;
-        
+
         U) doCommand "git svn rebase; git svn fetch" ;;
         Update) doCommand "git svn rebase; git svn fetch" ;;
-        
+
         x) executeSelective $2 $3 ;;
-        
+
         *) help ;;
     esac
     exit 1
