@@ -369,7 +369,7 @@ while getopts "a:c:hilr:sv" o; do
                 echo "Usage: mojo -a {p[roject] / e[xternal] } [directory]"
             fi
             ;;
-        c) doCommand "${OPTARG}" ;;
+        c) mojoCheck; doCommand "${OPTARG}" ;;
         h) help ;;
         i) init ;;
         l) list ;;
