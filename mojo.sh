@@ -4,7 +4,7 @@
 ###########
 # GLOBALS #
 ###########
-VERSION="14.12.03-1543"
+VERSION="14.12.18-1415"
 
 DIR=$(pwd)
 EXT=$(pwd)
@@ -384,7 +384,7 @@ remove() {
 #################
 # CASES IN MAIN #
 #################
-# Extracted for use with older versions of bash that don't support fallthrough
+# Extracted for use with older versions of bash that don't support fallthrough... I'm looking at you Apple.
 
 _commit() {
     touch .mojo/history-tmp
@@ -416,6 +416,9 @@ _push() {
     echo "$INFO Projects to be pushed:"
     showPending
     echo
+    
+    echo "Push will commence in 3 seconds..."
+    sleep 3
     
     touch $DIR/.mojo/history-tmp
     date >> $DIR/.mojo/history-tmp
