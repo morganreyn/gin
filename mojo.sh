@@ -127,7 +127,7 @@ doCommand() {
             else
                 echo "${TITLE}======[ $line ${txtrst}"
             fi
-        
+
             eval $@
             echo
         done < $DIR/.mojo/projects
@@ -152,7 +152,7 @@ doCommand() {
 doCommandIfChanges() {
     if [ $RUNPROJ == 1 ]; then
         echo "${STRT}"
-        echo 
+        echo
         while read line
         do
 	    cd $DIR/$line
@@ -185,9 +185,9 @@ executeSelective() {
         while read line
         do
             if [[ $line == *$1* ]]; then
-                echo "${TITLE}======[ $line ${txtrst}" 
-                cd $DIR/$line         
-                eval $2            
+                echo "${TITLE}======[ $line ${txtrst}"
+                cd $DIR/$line
+                eval $2
                 echo
             fi
         done < $DIR/.mojo/projects
@@ -198,9 +198,9 @@ executeSelective() {
         while read line
         do
             if [[ $line == *$1* ]]; then
-                echo "${TITLE}------[ $line ${txtrst}" 
-                cd $EXT/$line         
-                eval $2            
+                echo "${TITLE}------[ $line ${txtrst}"
+                cd $EXT/$line
+                eval $2
                 echo
             fi
         done < $DIR/.mojo/externals
@@ -215,7 +215,7 @@ showPending() {
             echo " $line"
         fi
     done < $DIR/.mojo/projects
-    
+
     while read line
     do
         cd $EXT/$line
@@ -288,29 +288,29 @@ add() {
     mojoCheck
     FILE=""
     case "$1" in
-        p) 
-            directoryCheck $DIR $2 
+        p)
+            directoryCheck $DIR $2
             FILE="projects"
             ;;
-        project) 
-            directoryCheck $DIR $2 
+        project)
+            directoryCheck $DIR $2
             FILE="projects"
             ;;
-        projects) 
-            directoryCheck $DIR $2 
+        projects)
+            directoryCheck $DIR $2
             FILE="projects"
             ;;
-        
-        e) 
-            directoryCheck $EXT $2 
+
+        e)
+            directoryCheck $EXT $2
             FILE="externals"
             ;;
         external)
-            directoryCheck $EXT $2 
+            directoryCheck $EXT $2
             FILE="externals"
             ;;
         externals)
-            directoryCheck $EXT $2 
+            directoryCheck $EXT $2
             FILE="externals"
             ;;
     esac
@@ -318,11 +318,11 @@ add() {
     checkAdd $2
     echo $2 >> $DIR/.mojo/$FILE
     echo "$PASS Added '$2' to $FILE."
-    
+
     # Cleanup
     sort $DIR/.mojo/projects -o $DIR/.mojo/projects
     sort $DIR/.mojo/externals -o $DIR/.mojo/externals
-    
+
     exit 1
 }
 
@@ -348,7 +348,7 @@ checkAdd() {
     if [[ "$EXTS" =~ "$1" ]]; then
         echo "$FAIL $1 already exists in externals."
         exit 1
-    fi  
+    fi
 }
 
 remove() {
@@ -416,15 +416,43 @@ _push() {
     echo "$INFO Projects to be pushed:"
     showPending
     echo
-    
-    echo "Push will commence in 3 seconds..."
-    sleep 3
-    
+
+    echo -n "Push will commence in: ";
+
+    echo -n "3"
+    sleep 0.33
+    echo -n "."
+    sleep 0.33
+    echo -n "."
+    sleep 0.33
+    echo -n "."
+    sleep 0.33
+
+    echo -n "2"
+    sleep 0.33
+    echo -n "."
+    sleep 0.33
+    echo -n "."
+    sleep 0.33
+    echo -n "."
+    sleep 0.33
+
+    echo -n "1"
+    sleep 0.33
+    echo -n "."
+    sleep 0.33
+    echo -n "."
+    sleep 0.33
+    echo -n "."
+    sleep 0.33
+
+    echo
+
     touch $DIR/.mojo/history-tmp
     date >> $DIR/.mojo/history-tmp
     echo "[ Push ]" >> $DIR/.mojo/history-tmp
     doPush
-    
+
     cd $DIR
     echo "==========" >> $DIR/.mojo/history-tmp
     echo "" >> $DIR/.mojo/history-tmp
@@ -448,7 +476,7 @@ RUNPROJ=1
 RUNEXT=1
 while getopts "a:c:e:hilp:r:sv" o; do
     case "${o}" in
-        a) 
+        a)
             if [[ $3 ]]; then
                 add ${OPTARG} $3
             else
@@ -456,38 +484,38 @@ while getopts "a:c:e:hilp:r:sv" o; do
             fi
             exit 1
             ;;
-        c) 
+        c)
             mojoCheck
             doCommand "${OPTARG}"
-            exit 1 
+            exit 1
             ;;
 #         e)
 #             RUNPROJ=0
 #             ;;
-        h) 
-            help 
+        h)
+            help
             exit 1
             ;;
-        i) 
-            init 
+        i)
+            init
             exit 1
             ;;
-        l) 
-            list 
+        l)
+            list
             exit 1
             ;;
 #         p)
 #             RUNEXT=0
 #             ;;
-        r) 
-            remove ${OPTARG} 
+        r)
+            remove ${OPTARG}
             exit 1
             ;;
-        s) showConfigs 
+        s) showConfigs
             exit 1
             ;;
-        v) 
-            echo $VERSION 
+        v)
+            echo $VERSION
             exit 1
             ;;
     esac
