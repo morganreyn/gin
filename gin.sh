@@ -39,10 +39,10 @@ TITLE_DIRTY=${txtbld}$(tput setaf 1)
 # FUNCTIONS #
 #############
 
-mojoCheck() {
-    if [ ! -d ".mojo" ]; then
-        echo "$INFO This is not a mojo directory."
-        echo "$INFO Use 'mojo -i' to initialize a mojo project"
+ginCheck() {
+    if [ ! -d ".gin" ]; then
+        echo "$INFO This is not a gin directory."
+        echo "$INFO Use 'gin -i' to initialize a gin project"
         exit 1
     fi
 }
@@ -55,7 +55,7 @@ directoryCheck() {
 }
 
 config() {
-    if [ -d ".mojo" ]; then
+    if [ -d ".gin" ]; then
         IFS="="
         while read -r name value
         do
@@ -64,22 +64,22 @@ config() {
                 EXT) EXT=$value ;;
                 COMMIT) COMMIT=$value ;;
             esac
-        done < .mojo/config
+        done < .gin/config
     fi
 }
 
 showConfigs() {
-    mojoCheck
-    cat $DIR/.mojo/config
+    ginCheck
+    cat $DIR/.gin/config
 }
 
 help() {
     echo "-a <p/e> <dir name>   add project or external"
     echo "-c <command>          do shell command"
     echo "-h                    help"
-    echo "-i                    mojo initialize"
+    echo "-i                    gin initialize"
     echo "-l                    list projects and externals"
-    echo "-r <dir name>         remove project/external from mojo"
+    echo "-r <dir name>         remove project/external from gin"
     echo "-s                    show configuration values"
     echo "-v                    show version"
     echo
@@ -99,19 +99,19 @@ help() {
 }
 
 init() {
-    if [ -d ".mojo" ]; then
-        echo "mojo directory reinitializing...."
+    if [ -d ".gin" ]; then
+        echo "gin directory reinitializing...."
     else
-        echo "Initializing mojo directory..."
-        mkdir .mojo
+        echo "Initializing gin directory..."
+        mkdir .gin
     fi
-    touch .mojo/projects
-    touch .mojo/externals
-    touch .mojo/config
-    touch .mojo/history
-    echo "DIR=$DIR" > .mojo/config
-    echo "EXT=$DIR" >> .mojo/config
-    echo "COMMIT=\"git commit -a\"" >> .mojo/config
+    touch .gin/projects
+    touch .gin/externals
+    touch .gin/config
+    touch .gin/history
+    echo "DIR=$DIR" > .gin/config
+    echo "EXT=$DIR" >> .gin/config
+    echo "COMMIT=\"git commit -a\"" >> .gin/config
     exit 1
 }
 
@@ -130,7 +130,7 @@ doCommand() {
 
             eval $@
             echo
-        done < $DIR/.mojo/projects
+        done < $DIR/.gin/projects
     fi
     if [ $RUNEXT == 1 ]; then
         echo "${SEPR}"
@@ -145,7 +145,7 @@ doCommand() {
             fi
        	    eval $@
             echo
-        done < $DIR/.mojo/externals
+        done < $DIR/.gin/externals
     fi
 }
 
@@ -161,7 +161,7 @@ doCommandIfChanges() {
                 eval $@
                 echo
             fi
-        done < $DIR/.mojo/projects
+        done < $DIR/.gin/projects
     fi
     if [ $RUNEXT == 1 ]; then
         echo "${SEPR}"
@@ -174,7 +174,7 @@ doCommandIfChanges() {
                 eval $@
                 echo
             fi
-        done < $DIR/.mojo/externals
+        done < $DIR/.gin/externals
     fi
 }
 
@@ -190,7 +190,7 @@ executeSelective() {
                 eval $2
                 echo
             fi
-        done < $DIR/.mojo/projects
+        done < $DIR/.gin/projects
     fi
     if [ $RUNEXT == 1 ]; then
         echo "${SEPR}"
@@ -203,7 +203,7 @@ executeSelective() {
                 eval $2
                 echo
             fi
-        done < $DIR/.mojo/externals
+        done < $DIR/.gin/externals
     fi
 }
 
@@ -214,7 +214,7 @@ showPending() {
         if [[ -n $(git log --branches --not --remotes --simplify-by-decoration --decorate --oneline) ]]; then
             echo " $line"
         fi
-    done < $DIR/.mojo/projects
+    done < $DIR/.gin/projects
 
     while read line
     do
@@ -222,7 +222,7 @@ showPending() {
         if [[ -n $(git log --branches --not --remotes --simplify-by-decoration --decorate --oneline) ]]; then
             echo " $line"
         fi
-    done < $DIR/.mojo/externals
+    done < $DIR/.gin/externals
 }
 
 doPush() {
@@ -243,7 +243,7 @@ doPush() {
                     git stash pop
                 fi
             fi
-        done < $DIR/.mojo/projects
+        done < $DIR/.gin/projects
     fi
     if [ $RUNEXT == 1 ]; then
         while read line
@@ -262,30 +262,30 @@ doPush() {
                     git stash pop
                 fi
             fi
-        done < $DIR/.mojo/externals
+        done < $DIR/.gin/externals
     fi
 
 }
 
 list() {
-    mojoCheck
+    ginCheck
     echo "Projects:"
     while read line
     do
         echo " $line"
-    done < .mojo/projects
+    done < .gin/projects
     echo ""
     echo "Externals:"
     while read line
     do
         echo " $line"
-    done < .mojo/externals
+    done < .gin/externals
     echo ""
     exit 1
 }
 
 add() {
-    mojoCheck
+    ginCheck
     FILE=""
     case "$1" in
         p)
@@ -316,12 +316,12 @@ add() {
     esac
 
     checkAdd $2
-    echo $2 >> $DIR/.mojo/$FILE
+    echo $2 >> $DIR/.gin/$FILE
     echo "$PASS Added '$2' to $FILE."
 
     # Cleanup
-    sort $DIR/.mojo/projects -o $DIR/.mojo/projects
-    sort $DIR/.mojo/externals -o $DIR/.mojo/externals
+    sort $DIR/.gin/projects -o $DIR/.gin/projects
+    sort $DIR/.gin/externals -o $DIR/.gin/externals
 
     exit 1
 }
@@ -333,12 +333,12 @@ checkAdd() {
     while read line
     do
         PRJS="$PRJS $line |"
-    done < $DIR/.mojo/projects
+    done < $DIR/.gin/projects
 
     while read line
     do
        	EXTS="$EXTS $line"
-    done < $DIR/.mojo/externals
+    done < $DIR/.gin/externals
 
     if [[ "$PRJS" =~ "$1" ]]; then
         echo "$FAIL $1 already exists in projects."
@@ -352,32 +352,32 @@ checkAdd() {
 }
 
 remove() {
-    mojoCheck
-    touch $DIR/.mojo/projects-tmp
-    touch $DIR/.mojo/externals-tmp
+    ginCheck
+    touch $DIR/.gin/projects-tmp
+    touch $DIR/.gin/externals-tmp
     while read line
     do
 		if [[ "$line" != "$1" ]]; then
-		    echo $line >> .mojo/projects-tmp
+		    echo $line >> .gin/projects-tmp
 		else
 		    echo "$INFO Removing $1 from projects..."
 		fi
-    done < $DIR/.mojo/projects
+    done < $DIR/.gin/projects
 
     while read line
     do
         if [[ "$line" != "$1" ]]; then
-		    echo $line >> .mojo/externals-tmp
+		    echo $line >> .gin/externals-tmp
 		else
 		    echo "$INFO Removing $1 from externals..."
 		fi
-    done < $DIR/.mojo/externals
+    done < $DIR/.gin/externals
 
-    rm $DIR/.mojo/projects
-    rm $DIR/.mojo/externals
-    mv $DIR/.mojo/projects-tmp $DIR/.mojo/projects
-    mv $DIR/.mojo/externals-tmp $DIR/.mojo/externals
-    echo "$PASS $1 removed from mojo."
+    rm $DIR/.gin/projects
+    rm $DIR/.gin/externals
+    mv $DIR/.gin/projects-tmp $DIR/.gin/projects
+    mv $DIR/.gin/externals-tmp $DIR/.gin/externals
+    echo "$PASS $1 removed from gin."
 
 }
 
@@ -387,16 +387,16 @@ remove() {
 # Extracted for use with older versions of bash that don't support fallthrough... I'm looking at you Apple.
 
 _commit() {
-    touch .mojo/history-tmp
-	date >> .mojo/history-tmp
-	echo "[ Commit ] $2" >> .mojo/history-tmp
-    doCommandIfChanges "git add --all; eval $COMMIT; pwd >> $DIR/.mojo/history-tmp"
+    touch .gin/history-tmp
+	date >> .gin/history-tmp
+	echo "[ Commit ] $2" >> .gin/history-tmp
+    doCommandIfChanges "git add --all; eval $COMMIT; pwd >> $DIR/.gin/history-tmp"
     cd $DIR
-    echo "==========" >> .mojo/history-tmp
-    echo "" >> .mojo/history-tmp
-    cat .mojo/history >> .mojo/history-tmp
-    cat .mojo/history-tmp > .mojo/history
-    rm .mojo/history-tmp
+    echo "==========" >> .gin/history-tmp
+    echo "" >> .gin/history-tmp
+    cat .gin/history >> .gin/history-tmp
+    cat .gin/history-tmp > .gin/history
+    rm .gin/history-tmp
 }
 
 _diff() {
@@ -404,11 +404,11 @@ _diff() {
 }
 
 _history() {
-    touch .mojo/history
+    touch .gin/history
     if [ $2 ]; then
-        sed -n -e "/$2/,/====/ p" .mojo/history
+        sed -n -e "/$2/,/====/ p" .gin/history
     else
-        less .mojo/history
+        less .gin/history
     fi
 }
 
@@ -448,17 +448,17 @@ _push() {
 
     echo
 
-    touch $DIR/.mojo/history-tmp
-    date >> $DIR/.mojo/history-tmp
-    echo "[ Push ]" >> $DIR/.mojo/history-tmp
+    touch $DIR/.gin/history-tmp
+    date >> $DIR/.gin/history-tmp
+    echo "[ Push ]" >> $DIR/.gin/history-tmp
     doPush
 
     cd $DIR
-    echo "==========" >> $DIR/.mojo/history-tmp
-    echo "" >> $DIR/.mojo/history-tmp
-    cat $DIR/.mojo/history >> $DIR/.mojo/history-tmp
-    cat $DIR/.mojo/history-tmp > $DIR/.mojo/history
-    rm $DIR/.mojo/history-tmp
+    echo "==========" >> $DIR/.gin/history-tmp
+    echo "" >> $DIR/.gin/history-tmp
+    cat $DIR/.gin/history >> $DIR/.gin/history-tmp
+    cat $DIR/.gin/history-tmp > $DIR/.gin/history
+    rm $DIR/.gin/history-tmp
 }
 
 _status() {
@@ -480,12 +480,12 @@ while getopts "a:c:e:hilp:r:sv" o; do
             if [[ $3 ]]; then
                 add ${OPTARG} $3
             else
-                echo "Usage: mojo -a {p[roject] / e[xternal] } [directory]"
+                echo "Usage: gin -a {p[roject] / e[xternal] } [directory]"
             fi
             exit 1
             ;;
         c)
-            mojoCheck
+            ginCheck
             doCommand "${OPTARG}"
             exit 1
             ;;
@@ -522,7 +522,7 @@ while getopts "a:c:e:hilp:r:sv" o; do
 done
 
 if [ $1 ]; then
-    mojoCheck
+    ginCheck
     date
     case $1 in
         c) _commit $@ ;;
