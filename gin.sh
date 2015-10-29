@@ -4,7 +4,7 @@
 ###########
 # GLOBALS #
 ###########
-VERSION="14.12.18-1415"
+VERSION="15.10.29-1136"
 
 DIR=$(pwd)
 EXT=$(pwd)
@@ -212,7 +212,7 @@ showPending() {
     do
         cd $DIR/$line
         if [[ -n $(git log --branches --not --remotes --simplify-by-decoration --decorate --oneline) ]]; then
-            echo " $line"
+            echo " $line: $(git log --branches --not --remotes --simplify-by-decoration --decorate --oneline)"
         fi
     done < $DIR/.gin/projects
 
@@ -220,7 +220,7 @@ showPending() {
     do
         cd $EXT/$line
         if [[ -n $(git log --branches --not --remotes --simplify-by-decoration --decorate --oneline) ]]; then
-            echo " $line"
+            echo " $line: $(git log --branches --not --remotes --simplify-by-decoration --decorate --oneline)"
         fi
     done < $DIR/.gin/externals
 }
