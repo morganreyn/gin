@@ -83,6 +83,7 @@ help() {
     echo "-s                    show configuration values"
     echo "-v                    show version"
     echo
+    echo "clone <url> <p/e>     clone repo and add as project or external"
     echo "c, commit [message]   commit all changes"
     echo "d, diff               diff all edited files"
     echo "h, history [term]     show commit history (optional search for 'term')"
@@ -386,6 +387,32 @@ remove() {
 #################
 # Extracted for use with older versions of bash that don't support fallthrough... I'm looking at you Apple.
 
+_clone() {
+    if [ ! $3 ]; then
+        echo "usage: gin clone <url> <(p)roject/(e)xternal>"
+        exit 1
+    fi
+    URL=${2%/}
+    TYPE=$3
+    COMPONENT=$(echo $URL | sed 's/.*\///')
+
+    if [ -d $COMPONENT ]; then
+        echo "Directory '$COMPONENT' already exists."
+    fi
+
+    if [ $TYPE == 'p' -o $TYPE == 'project' ]; then
+        cd $DIR; git svn clone $URL --stdlayout; gin -a $TYPE $COMPONENT
+        exit 1
+    fi
+
+    if [ $TYPE == 'e' -o $TYPE == 'external' ]; then
+        cd $EXT; git svn clone $URL --stdlayout; gin -a $TYPE $COMPONENT
+        exit 1
+    fi
+
+    echo "Unknown type: '$TYPE'. Use 'project', 'p', 'external', or 'e'"
+}
+
 _commit() {
     touch .gin/history-tmp
 	date >> .gin/history-tmp
@@ -527,6 +554,8 @@ if [ $1 ]; then
     case $1 in
         c) _commit $@ ;;
         commit) _commit $@ ;;
+
+        clone) _clone $@ ;;
 
         d) _diff $@ ;;
         diff) _diff $@ ;;
